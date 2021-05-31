@@ -1,0 +1,58 @@
+import numpy as np
+import pandas as pd
+
+# Batch Perceptron Learning Algorithm
+
+# INPUTS:
+    # x: data
+    # y: target
+    # a: initial weights
+    # eta: learning rate
+    # n_epochs: number of epochs of learning on the entire dataset
+    # augmentation: True if data is augmented
+    # sample_normalisation: True if sample normalisation applied
+
+def batch_perceptron_learning(x, y, a, eta, n_epochs, augmentation, sample_normalisation):
+    n_instances = len(x)
+    
+    if augmentation:
+        x = np.insert(x, 0, 1, axis=1)
+    
+    if sample_normalisation: # CAREFUL WITH THE DATA LABEL
+        x[y==-1] = -x[y==-1]
+        
+    if sample_normalisation:
+        for n in range(n_epochs):
+            sumando = 0
+            print("Epoch #{}: ".format(n+1))
+            for i in range(n_instances):
+                if np.sign(np.dot(a, x[i])) <= 0: # only misclassified samples
+                    sumando += x[i]
+            a += eta*sumando
+            print("Epoch #{}: {}".format(n+1, a))
+            print("End of epoch #{}\n".format(n+1))
+            
+    else:
+        for n in range(n_epochs):
+            sumando = 0     
+            print("Epoch #{}: ".format(n+1))
+            for i in range(n_instances):
+                if np.sign(np.dot(a, x[i])) != y[i]: # only misclassified samples
+                    sumando += x[i]
+                if np.dot(a, x[i]) == 0 and y[i] == 1: # if g(x)=0 it is from class -1
+                    sumando += x[i]
+            a += eta*sumando
+            print("Epoch #{}: {}".format(n+1, a))
+            print("End of epoch #{}\n".format(n+1))
+    
+    return a
+    
+    
+# Tutorial example (exercise 6)
+x = np.array([[1, 5], [2, 5], [4, 1], [5, 1]]) # data
+y = np.array([1, 1, -1, -1]) # targets
+a = np.array([-25, 6, 3]) # initial weights
+
+# And here we estimate the new vector
+a = batch_perceptron_learning(x, y, a, 1, 3, True, True)
+print(a) # It should be [-25   0  11]
