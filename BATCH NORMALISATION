@@ -1,0 +1,39 @@
+# Batch Normalisation
+
+# INPUTS:
+    # x: samples in a batch
+    # beta: parameter
+    # gamma: parameter
+    # epsilon: constant used to prevent division-by-zero errors
+    
+    # BN(x) = beta + gamma*(x - E(x)/sqrt(Var(x) + epsilon))
+        # E(x) is the mean and Var(x) is the variance
+    
+def batch_normalisation(x, beta, gamma, epsilon):
+    n_samples = len(x)
+    
+    E = np.zeros(x[0].shape)
+    Var = np.zeros(x[0].shape)
+
+    for i in range(x[0].shape[0]):
+        for j in range(x[0].shape[1]):
+            E[i, j] = x[:, i, j].mean()
+            Var[i, j] = x[:, i, j].var()
+    
+    new_x = np.zeros(x.shape)    
+    for i in range(n_samples):
+        new_x[i] = beta + gamma*(x[i] - E)/(np.sqrt(Var + epsilon))
+    
+    return new_x  
+    
+    
+# Tutorial example (exercise 9)
+x = np.array([[[1, 0.5, 0.2], [-1, -0.5, -0.2], [0.1, -0.1, 0]], [[1, -1, 0.1], [0.5, -0.5, -0.1], [0.2, -0.2, 0]],
+             [[0.5, -0.5, -0.1], [0, -0.4, 0], [0.5, 0.5, 0.2]], [[0.2, 1, -0.2], [-1, -0.6, -0.1], [0.1, 0, 0.1]]]) # samples
+beta = 0
+gamma = 1
+epsilon = 0.1
+
+# And here we estimate the new samples after BN
+new_x = batch_normalisation(x, beta, gamma, epsilon)
+print("new samples after batch normalisation: {}".format(new_x))
